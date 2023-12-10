@@ -1,0 +1,12 @@
+6
+John 1 20 123-456-7890
+Alice 2 22 987-654-3210
+Bob 3 21 555-123-4567
+John 1 20 123-456-7890
+Alice 2 22 987-654-3210
+Bob 3 21 555-123-4567
+4
+CS101 IntroductionToProgramming 30
+MATH202 AdvancedCalculus 25
+CS101 IntroductionToProgramming 30
+MATH202 AdvancedCalculus 25
