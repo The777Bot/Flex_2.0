@@ -575,7 +575,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Student Management System");
 
     System system("data.txt");
-    system.loadDataFromFile();
+    //system.loadDataFromFile();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -611,7 +611,7 @@ int main() {
         window.draw(text2);
 
         window.display();
-
+        window.close();
         // Your existing logic (input handling, processing, etc.) remains in the System class.
         system.run();
     }

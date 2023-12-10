@@ -1,12 +1,25 @@
-6
+15
 John 1 20 123-456-7890
 Alice 2 22 987-654-3210
 Bob 3 21 555-123-4567
-John 1 20 123-456-7890
-Alice 2 22 987-654-3210
-Bob 3 21 555-123-4567
-4
+asad 4 20 123-456-7890
+Aliza 5 22 987-654-3210
+Babar 6 21 555-123-4567
+Junaid 7 20 123-456-7890
+saboor 8 22 987-654-3210
+Saqib 9 21 555-123-4567
+mughal 10 20 123-456-7890
+ahmed 11 22 987-654-3210
+Amna 12 21 555-123-4567
+ubaid 1808 21 2222
+taha 1780 20 6666
+ali 1111 22 505056
+8
 CS101 IntroductionToProgramming 30
 MATH202 AdvancedCalculus 25
-CS101 IntroductionToProgramming 30
-MATH202 AdvancedCalculus 25
+ENG303 EnglishComposition 33
+PHY404 AdvancedPhysics 29
+ICT505 IntroductionToComputerTechnology 35
+CS606 ObjectOrientedProgramming 40
+PHY405 DigitalLogicDesign 20
+MATH203 DifferentialEquation 38
