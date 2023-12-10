@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include<string>
+#include <unordered_map>
 using namespace std;
 
 class Validator {
@@ -41,7 +42,7 @@ private:
     int age;
     string contact;
     vector<string> courses;
-
+    unordered_map<string, int> marks;  // Add this line for storing marks
 public:
     Student(const string& n, int roll, int a, const string& c) : name(n), rollNumber(roll), age(a), contact(c) {}
 
@@ -89,8 +90,20 @@ public:
         auto it = remove(courses.begin(), courses.end(), courseCode);
         courses.erase(it, courses.end());
     }
-
     // Getters and setters as needed
+    void assignMarks(const string& courseCode, int marksValue) {
+        // Assign marks for a specific course
+        marks[courseCode] = marksValue;
+    }
+
+    void displayMarks() const {
+        // Display marks for each enrolled course
+        cout << "Marks for " << name << ":\n";
+        for (const auto& entry : marks) {
+            cout << entry.first << ": " << entry.second << " ";
+        }
+        cout << endl;
+    }
 };
 
 class Course {
@@ -99,7 +112,7 @@ private:
     string name;
     int capacity;
     vector<Student*> enrolledStudents;
-
+    map<string, int> marks;
 public:
     Course(const string& c, const string& n, int cap) : code(c), name(n), capacity(cap) {}
 
@@ -132,7 +145,23 @@ public:
         student->withdrawFromCourse(code);
         cout << "Student withdrawn from the course.\n";
     }
+    void displayEnrolledStudentsMarks() const {
+        cout << "Enrolled Students in " << name << " with Marks:\n";
+        for (const auto& student : enrolledStudents) {
+            cout << "Name: " << student->getName() << "\tRoll Number: " << student->getRollNumber();
+            auto it = marks.find(student->getName());
+            if (it != marks.end()) {
+                cout << "\tMarks: " << it->second;
+            }
+            cout << endl;
+        }
+    }
 
+    // Function to assign marks to a student
+    void assignMarks(const string& courseName, int marks) {
+        // Assuming marks is a member of the Student class, you should have a data structure to store marks for each course
+        this->marks[courseName] = marks;
+    }
     // Getters and setters as needed
     const string& getCode() const {
         return code;
@@ -386,15 +415,15 @@ private:
             course.displayEnrolledStudents(); // Display enrolled students in the course
 
             // Implement logic to display marks for each student in the course
-            for (const auto& student : course.getEnrolledStudents()) {
+            for (const auto& studentptr : course.getEnrolledStudents()) {
                 // Display marks for the student
-                // For example, you might have a function in the Student class like student.displayMarks(course.getName());
+                studentptr->displayMarks();
             }
         }
     }
 
     void assignMarks() {
-        // Implement logic to assign marks
+        
         // Assuming you have courses and want to assign marks for each course
         for (auto& course : courses) {
             cout << "Assign Marks for " << course.getName() << ":\n";
@@ -408,7 +437,7 @@ private:
 
                 // Add error checking for marks if needed
                 // Assign marks to the student
-                // For example, you might have a function in the Student class like student.assignMarks(course.getName(), marks);
+                student->assignMarks(course.getName(), marks);
             }
         }
     }
@@ -472,7 +501,9 @@ private:
 
                 // Add error checking for choice if needed
                 if (choice >= 1 && choice <= studentIt->getEnrolledCourses().size()) {
-                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice - 1]);
+                  //  studentIt->withdrawFromCourse(static_cast<si>(choice - 1));
+
+                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice ]);
                 }
                 else {
                     cout << "Invalid choice. No course dropped.\n";
@@ -571,6 +602,8 @@ public:
     }
 };
 
+
+//heres 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Student Management System");
 
