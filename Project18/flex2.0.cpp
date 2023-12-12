@@ -1,12 +1,20 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
-#include <fstream>
+#include<iostream>
+#include"SFML/Graphics.hpp"
+#include"Windows.h"
+#include<fstream>
 #include <vector>
 #include <algorithm>
 #include <cctype>
 #include<string>
 using namespace std;
+using namespace sf;
+sf::Color yaleBlue(13, 77, 146);
+sf::Color offWhiteColor(240, 240, 240);
+sf::Color lightGray(211, 211, 211);
 
+sf::Color darkerYaleBlue(8, 40, 79);
+void handleAcademicOfficerAction(sf::RenderWindow& window, int& input);
+void handleStudentAction(sf::RenderWindow& window, int& input);
 class Validator {
 public:
     static bool isValidRollNumber(int rollNumber) {
@@ -50,10 +58,12 @@ public:
         displayEnrolledCourses();
     }
 
-    void displayEnrolledCourses() const {
+    void displayEnrolledCourses() const 
+    {
         if (!courses.empty()) {
             cout << "Enrolled Courses: ";
-            for (const auto& course : courses) {
+            for (const auto& course : courses)
+            {
                 cout << course << " ";
             }
             cout << endl;
@@ -395,6 +405,7 @@ private:
 
     void assignMarks() {
         // Implement logic to assign marks
+
         // Assuming you have courses and want to assign marks for each course
         for (auto& course : courses) {
             cout << "Assign Marks for " << course.getName() << ":\n";
@@ -472,7 +483,9 @@ private:
 
                 // Add error checking for choice if needed
                 if (choice >= 1 && choice <= studentIt->getEnrolledCourses().size()) {
-                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice - 1]);
+                  //  studentIt->withdrawFromCourse(static_cast<si>(choice - 1));
+
+                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice ]);
                 }
                 else {
                     cout << "Invalid choice. No course dropped.\n";
@@ -528,9 +541,168 @@ public:
     void saveDataToFile() const {
         fileHandler.writeFile(students, courses);
     }
+    bool checkSettingMenu(const int& x, const int& y)
+    {
+        if (y >= 313 && y <= 605)
+        {
+            if (x >= 320 && x <= 340)//for  first button x coordinates
+            {
+                enrollStudent();
+                //break;
+            }
+            else if (x >= 280 && x <= 340)// for sceond button 
+            {
+                courseRegistrationMenu();
+            }
+            else if (x >= 350 && x <= 380)//for third button
+            {
+                attendanceMenu();
+            }
+            else {//if y coordiantes not wihtin bound return false
+                return false;
+            }
+        }
+    }
+    void run()
+    {
+        loadDataFromFile();
+        sf::RenderWindow window(sf::VideoMode(830, 600), "FLEX_2.0");
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
 
-    void run() {
-        loadDataFromFile(); // Load existing data from file
+            window.clear(sf::Color::Cyan);
+
+            // Display your user interface using SFML, e.g., buttons, text, etc.
+            // For simplicity, I'm displaying a basic message.
+            sf::Font font;
+            if (!font.loadFromFile("Fonts/verdanab.ttf")) {
+                cerr << "Error: Font not found.\n";
+                return;
+            }
+
+            sf::Text text;
+            text.setFont(font);
+            text.setString("Welcome to Student Management System");
+            text.setCharacterSize(26);
+            text.setFillColor(sf::Color::White);
+            text.setPosition(100.f, 50.f);
+            window.draw(text);
+
+
+            sf::Text text2;
+            text2.setFont(font);
+            text2.setString("MAIN MENU");
+            text2.setCharacterSize(21);
+            text2.setFillColor(sf::Color::Black);
+            text2.setPosition(330.f, 150.f);
+            window.draw(text2);
+
+
+            ///////////////////////////
+
+
+
+            sf::Text text3;
+            text3.setFont(font);
+            text3.setString("ENROLL A STUDENT");
+            text3.setCharacterSize(20);
+            text3.setFillColor(sf::Color::Black);
+            text3.setPosition(320.f, 200.f);
+            window.draw(text);
+            window.draw(text3);
+
+            ///////////////////////////////
+
+
+            sf::Text text4;
+            text4.setFont(font);
+            text4.setString("COURSE REGISTERATION");
+            text4.setCharacterSize(20);
+            text4.setFillColor(sf::Color::Black);
+            text4.setPosition(280.f, 250.f);
+            window.draw(text);
+            window.draw(text4);
+
+            ///////////////////////////////////
+
+
+            sf::Text text5;
+            text5.setFont(font);
+            text5.setString("ATTENDENCE");
+            text5.setCharacterSize(20);
+            text5.setFillColor(sf::Color::Black);
+            text5.setPosition(350.f, 300.f);
+            window.draw(text);
+            window.draw(text5);
+
+            //////////////////////////////////////
+
+
+            sf::Text text6;
+            text6.setFont(font);
+            text6.setString(" MARKS");
+            text6.setCharacterSize(20);
+            text6.setFillColor(sf::Color::Black);
+            text6.setPosition(376.f, 350.f);
+            window.draw(text);
+            window.draw(text6);
+
+            ///////////////////////////////////////
+
+            sf::Text text7;
+            text7.setFont(font);
+            text7.setString(" COURSE WITHDRAW");
+            text7.setCharacterSize(20);
+            text7.setFillColor(sf::Color::Black);
+            text7.setPosition(305.f, 400.f);
+            window.draw(text);
+            window.draw(text7);
+
+            /////////////////////////////////////
+
+            sf::Text text8;
+            text8.setFont(font);
+            text8.setString(" EXIT");
+            text8.setCharacterSize(20);
+            text8.setFillColor(sf::Color::Black);
+            text8.setPosition(376.f, 450.f);
+            window.draw(text);
+            window.draw(text8);
+
+            //////////////////////////////////////
+            //mouse buttons
+            if (Mouse::isButtonPressed(Mouse::Left))
+            {
+                Vector2i mousepos = Mouse::getPosition(window);
+                Sleep(200);//delays program for 0.2 second to avoid taking too much cpu time
+                checkSettingMenu(mousepos.x, mousepos.y);
+
+                
+            }
+            window.display();
+            // window.close();
+             // Your existing logic (input handling, processing, etc.) remains in the System class.
+
+
+        /* sf::RenderWindow addMenuWindow(sf::VideoMode(700, 500), "FLEX_2.0");
+
+         sf::Font font;
+         font.loadFromFile("Fonts/verdanab.ttf");
+         sf::Text inputPrompt("Enter Course Information", font, 45);
+         inputPrompt.setPosition(40.0f, 40.0f);
+         inputPrompt.setOutlineColor(sf::Color::Black);
+         inputPrompt.setOutlineThickness(3);
+         sf::Text resultText("", font, 20);
+         resultText.setPosition(340.f, 160.f);
+         resultText.setFillColor(sf::Color::Black);
+         sf::String userInput;*/
+
+         //addMenuWindow.setPosition(40.0f, 40.0f);
+         // Load existing data from file
         int choice;
         do {
             // Display main menu and handle user input
@@ -571,55 +743,20 @@ public:
     }
 };
 
+
+//heres 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Student Management System");
+   
 
     System system("data.txt");
     //system.loadDataFromFile();
 
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear(sf::Color::White);
-
-        // Display your user interface using SFML, e.g., buttons, text, etc.
-        // For simplicity, I'm displaying a basic message.
-        sf::Font font;
-        if (!font.loadFromFile("Fonts/verdanab.ttf")) {
-            cerr << "Error: Font not found.\n";
-            return EXIT_FAILURE;
-        }
-
-        sf::Text text;
-        text.setFont(font);
-        text.setString("Welcome to Student Management System");
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::Black);
-        text.setPosition(50.f, 50.f);
-
-        sf::Text text2;
-        text2.setFont(font);
-        text2.setString("Enroll a Student");
-        text2.setCharacterSize(20);
-        text2.setFillColor(sf::Color::Black);
-        text2.setPosition(50.f, 100.f);
-        window.draw(text);
-        window.draw(text2);
-
-        window.display();
-        window.close();
-        // Your existing logic (input handling, processing, etc.) remains in the System class.
-        system.run();
-    }
+   
 
     system.saveDataToFile();
 
-   /* System system("data.txt");
-    system.run();*/
+   // System system("data.txt");
+    system.run();
     return 0;
 }
 
