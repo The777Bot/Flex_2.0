@@ -6,15 +6,11 @@
 #include <algorithm>
 #include <cctype>
 #include<string>
+#include <unordered_map>
 using namespace std;
 using namespace sf;
-sf::Color yaleBlue(13, 77, 146);
-sf::Color offWhiteColor(240, 240, 240);
-sf::Color lightGray(211, 211, 211);
 
-sf::Color darkerYaleBlue(8, 40, 79);
-void handleAcademicOfficerAction(sf::RenderWindow& window, int& input);
-void handleStudentAction(sf::RenderWindow& window, int& input);
+
 class Validator {
 public:
     static bool isValidRollNumber(int rollNumber) {
@@ -49,7 +45,7 @@ private:
     int age;
     string contact;
     vector<string> courses;
-
+    unordered_map<string, int> marks;
 public:
     Student(const string& n, int roll, int a, const string& c) : name(n), rollNumber(roll), age(a), contact(c) {}
 
@@ -69,7 +65,7 @@ public:
             cout << endl;
         }
     }
-
+    // Getters and setters as needed
     string getName() const {
         return name;
     }
@@ -100,7 +96,19 @@ public:
         courses.erase(it, courses.end());
     }
 
-    // Getters and setters as needed
+    void assignMarks(const string& courseCode, int marksValue) {
+        // Assign marks for a specific course
+        marks[courseCode] = marksValue;
+    }
+    void displayMarks() const {
+        // Display marks for each enrolled course
+        cout << "Marks for " << name << ":\n";
+        for (const auto& entry : marks) {
+            cout << entry.first << ": " << entry.second << " ";
+        }
+        cout << endl;
+    }
+    
 };
 
 class Course {
@@ -109,7 +117,7 @@ private:
     string name;
     int capacity;
     vector<Student*> enrolledStudents;
-
+    map<string, int> marks;
 public:
     Course(const string& c, const string& n, int cap) : code(c), name(n), capacity(cap) {}
 
@@ -142,7 +150,21 @@ public:
         student->withdrawFromCourse(code);
         cout << "Student withdrawn from the course.\n";
     }
-
+    void displayEnrolledStudentsMarks() const {
+        cout << "Enrolled Students in " << name << " with Marks:\n";
+        for (const auto& student : enrolledStudents) {
+            cout << "Name: " << student->getName() << "\tRoll Number: " << student->getRollNumber();
+            auto it = marks.find(student->getName());
+            if (it != marks.end()) {
+                cout << "\tMarks: " << it->second;
+            }
+            cout << endl;
+        }
+    }
+    void assignMarks(const string& courseName, int marks) {
+        // Assuming marks is a member of the Student class, you should have a data structure to store marks for each course
+        this->marks[courseName] = marks;
+    }
     // Getters and setters as needed
     const string& getCode() const {
         return code;
@@ -396,9 +418,10 @@ private:
             course.displayEnrolledStudents(); // Display enrolled students in the course
 
             // Implement logic to display marks for each student in the course
-            for (const auto& student : course.getEnrolledStudents()) {
+            for (const auto& studentPtr : course.getEnrolledStudents()) {
                 // Display marks for the student
-                // For example, you might have a function in the Student class like student.displayMarks(course.getName());
+                // For example, you might have a function in the Student class like studentPtr->displayMarks();
+                studentPtr->displayMarks();
             }
         }
     }
@@ -420,6 +443,7 @@ private:
                 // Add error checking for marks if needed
                 // Assign marks to the student
                 // For example, you might have a function in the Student class like student.assignMarks(course.getName(), marks);
+                student->assignMarks(course.getName(), marks);
             }
         }
     }
@@ -508,27 +532,30 @@ private:
         cout << "Enter student name: ";
         cin.ignore(); // Clear buffer
         getline(cin, name);
+        cout << endl;
+
 
         cout << "Enter student roll number: ";
         cin >> rollNumber;
-
+        cout << endl;
         // Add validation for rollNumber using isValidRollNumber
 
         cout << "Enter student age: ";
         cin >> age;
-
+        cout << endl;
         // Add validation for age using isValidAge
 
         cout << "Enter student contact: ";
         cin.ignore(); // Clear buffer
         getline(cin, contact);
-
+        cout << endl;
         // Add validation for contact using isValidContact
 
         Student newStudent(name, rollNumber, age, contact);
         students.push_back(newStudent);
 
         cout << "Student enrolled successfully.\n";
+        cout << endl;
     }
 
 public:
@@ -855,7 +882,8 @@ public:
             int choice;
             do {
                 // Display main menu and handle user input
-                cout << "Main Menu\n";
+                cout << "        Main Menu\n";
+                cout << endl;
                 cout << "1- Enroll a student\n";
                 cout << "2- Course Registration\n";
                 cout << "3- Attendance\n";
