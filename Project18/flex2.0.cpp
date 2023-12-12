@@ -483,9 +483,9 @@ private:
 
                 // Add error checking for choice if needed
                 if (choice >= 1 && choice <= studentIt->getEnrolledCourses().size()) {
-                  //  studentIt->withdrawFromCourse(static_cast<si>(choice - 1));
+                    //  studentIt->withdrawFromCourse(static_cast<si>(choice - 1));
 
-                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice ]);
+                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice]);
                 }
                 else {
                     cout << "Invalid choice. No course dropped.\n";
@@ -541,40 +541,121 @@ public:
     void saveDataToFile() const {
         fileHandler.writeFile(students, courses);
     }
-    bool checkSettingMenu(const int& x, const int& y)
+    bool checkButton(const int& x, const int& y)
     {
-        if (y >= 313 && y <= 605)
+        // Assuming button size is 20x20 pixels (adjust as needed)
+        float buttonWidth = 40.f;
+        float buttonHeight = 40.f;
+
+        // Button coordinates
+        float enrollX = 120.f;
+        float enrollY = 200.f;
+
+        float regisX = 120.f;
+        float regisY = 250.f;
+
+        float attendanceX = 120.f;
+        float attendanceY = 300.f;
+
+        float marksX = 120.f;
+        float marksY = 350.f;
+
+        float withdrawX = 120.f;
+        float withdrawY = 400.f;
+
+        float exitX = 120.f;
+        float exitY = 450.f;
+
+        if (y >= enrollY && y <= enrollY + buttonHeight)
         {
-            if (x >= 320 && x <= 340)//for  first button x coordinates
+            if (x >= enrollX && x <= enrollX + buttonWidth)
             {
                 enrollStudent();
-                //break;
-            }
-            else if (x >= 280 && x <= 340)// for sceond button 
-            {
-                courseRegistrationMenu();
-            }
-            else if (x >= 350 && x <= 380)//for third button
-            {
-                attendanceMenu();
-            }
-            else {//if y coordiantes not wihtin bound return false
-                return false;
+                return true;
             }
         }
+        else if (y >= regisY && y <= regisY + buttonHeight)
+        {
+            if (x >= regisX && x <= regisX + buttonWidth)
+            {
+                courseRegistrationMenu();
+                return true;
+            }
+        }
+        else if (y >= attendanceY && y <= attendanceY + buttonHeight)
+        {
+            if (x >= attendanceX && x <= attendanceX + buttonWidth)
+            {
+                attendanceMenu(); 
+                return true;
+            }
+        }
+        else if (y >= marksY && y <= marksY + buttonHeight)
+        {
+            if (x >= marksX && x <= marksX + buttonWidth)
+            {
+                marksMenu();
+                return true;
+            }
+        }
+        else if (y >= withdrawY && y <= withdrawY + buttonHeight)
+        {
+            if (x >= withdrawX && x <= withdrawX + buttonWidth)
+            {
+                courseWithdrawMenu();
+                return true;
+            }
+        }
+        else if (y >= exitY && y <= exitY + buttonHeight)
+        {
+            if (x >= exitX && x <= exitX + buttonWidth)
+            {
+                exit;
+            }
+        }
+
+        return false;
     }
+
     void run()
     {
         loadDataFromFile();
-        sf::RenderWindow window(sf::VideoMode(830, 600), "FLEX_2.0");
+        sf::RenderWindow window(sf::VideoMode(830, 600), "FLEX_2.0", sf::Style::Close);
+        // Define two rectangles to cover the window's left and right halves
+        // Define two rectangles to cover the window's upper and lower halves
+        sf::RectangleShape upperRect(sf::Vector2f(window.getSize().x, window.getSize().y / 8));
+        sf::RectangleShape lowerRect(sf::Vector2f(window.getSize().x, 7 * window.getSize().y / 8));
+
+        // Set positions for the rectangles
+        upperRect.setPosition(0, 0);
+        lowerRect.setPosition(0, window.getSize().y / 8);
+
+        // Set colors for the rectangles
+        upperRect.setFillColor(sf::Color::White);
+        lowerRect.setFillColor(sf::Color::Blue);
+
         while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+            }
+
+            window.clear();
+
+            // Draw the rectangles
+            window.draw(upperRect);
+            window.draw(lowerRect);
+
+       /* while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close();
             }
 
-            window.clear(sf::Color::Cyan);
+            window.clear(sf::Color::Cyan);*/
 
             // Display your user interface using SFML, e.g., buttons, text, etc.
             // For simplicity, I'm displaying a basic message.
@@ -583,22 +664,27 @@ public:
                 cerr << "Error: Font not found.\n";
                 return;
             }
+            sf::Font font2;
+            if (!font2.loadFromFile("Fonts/Pacifico.ttf")) {
+                cerr << "Error: Font not found.\n";
+                return;
+            }
 
             sf::Text text;
-            text.setFont(font);
-            text.setString("Welcome to Student Management System");
-            text.setCharacterSize(26);
-            text.setFillColor(sf::Color::White);
-            text.setPosition(100.f, 50.f);
+            text.setFont(font2);
+            text.setString("WELCOME  TO  STUDENT  MANAGMENT  SYSTEM ");
+            text.setCharacterSize(28);
+            text.setFillColor(sf::Color::Blue);
+            text.setPosition(55.f, 30.f);
             window.draw(text);
 
 
             sf::Text text2;
             text2.setFont(font);
             text2.setString("MAIN MENU");
-            text2.setCharacterSize(21);
-            text2.setFillColor(sf::Color::Black);
-            text2.setPosition(330.f, 150.f);
+            text2.setCharacterSize(24);
+            text2.setFillColor(sf::Color::White);
+            text2.setPosition(330.f, 130.f);
             window.draw(text2);
 
 
@@ -608,10 +694,10 @@ public:
 
             sf::Text text3;
             text3.setFont(font);
-            text3.setString("ENROLL A STUDENT");
-            text3.setCharacterSize(20);
-            text3.setFillColor(sf::Color::Black);
-            text3.setPosition(320.f, 200.f);
+            text3.setString("1. ENROLL A STUDENT");
+            text3.setCharacterSize(18);
+            text3.setFillColor(sf::Color::Cyan);
+            text3.setPosition(120.f, 200.f);
             window.draw(text);
             window.draw(text3);
 
@@ -620,10 +706,10 @@ public:
 
             sf::Text text4;
             text4.setFont(font);
-            text4.setString("COURSE REGISTERATION");
-            text4.setCharacterSize(20);
-            text4.setFillColor(sf::Color::Black);
-            text4.setPosition(280.f, 250.f);
+            text4.setString("2. COURSE REGISTERATION");
+            text4.setCharacterSize(18);
+            text4.setFillColor(sf::Color::Cyan);
+            text4.setPosition(120.f, 250.f);
             window.draw(text);
             window.draw(text4);
 
@@ -632,10 +718,10 @@ public:
 
             sf::Text text5;
             text5.setFont(font);
-            text5.setString("ATTENDENCE");
-            text5.setCharacterSize(20);
-            text5.setFillColor(sf::Color::Black);
-            text5.setPosition(350.f, 300.f);
+            text5.setString("3. ATTENDENCE");
+            text5.setCharacterSize(18);
+            text5.setFillColor(sf::Color::Cyan);
+            text5.setPosition(120.f, 300.f);
             window.draw(text);
             window.draw(text5);
 
@@ -644,21 +730,22 @@ public:
 
             sf::Text text6;
             text6.setFont(font);
-            text6.setString(" MARKS");
-            text6.setCharacterSize(20);
-            text6.setFillColor(sf::Color::Black);
-            text6.setPosition(376.f, 350.f);
+            text6.setString("4. MARKS");
+            text6.setCharacterSize(18);
+            text6.setFillColor(sf::Color::Cyan);
+            text6.setPosition(120.f, 350.f);
             window.draw(text);
             window.draw(text6);
+
 
             ///////////////////////////////////////
 
             sf::Text text7;
             text7.setFont(font);
-            text7.setString(" COURSE WITHDRAW");
-            text7.setCharacterSize(20);
-            text7.setFillColor(sf::Color::Black);
-            text7.setPosition(305.f, 400.f);
+            text7.setString("5. COURSE WITHDRAW");
+            text7.setCharacterSize(18);
+            text7.setFillColor(sf::Color::Cyan);
+            text7.setPosition(120.f, 400.f);
             window.draw(text);
             window.draw(text7);
 
@@ -666,23 +753,85 @@ public:
 
             sf::Text text8;
             text8.setFont(font);
-            text8.setString(" EXIT");
-            text8.setCharacterSize(20);
-            text8.setFillColor(sf::Color::Black);
-            text8.setPosition(376.f, 450.f);
+            text8.setString("6. EXIT");
+            text8.setCharacterSize(18);
+            text8.setFillColor(sf::Color::Cyan);
+            text8.setPosition(120.f, 450.f);
             window.draw(text);
             window.draw(text8);
 
             //////////////////////////////////////
-            //mouse buttons
-            if (Mouse::isButtonPressed(Mouse::Left))
-            {
-                Vector2i mousepos = Mouse::getPosition(window);
-                Sleep(200);//delays program for 0.2 second to avoid taking too much cpu time
-                checkSettingMenu(mousepos.x, mousepos.y);
+            // 
+            // 
+            sf::Text text9;
+            text9.setFont(font);
+            text9.setString(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+            text9.setCharacterSize(40);
+            text9.setFillColor(sf::Color::Yellow);
+            text9.setPosition(0.f, 500.f);
+            window.draw(text);
+            window.draw(text9);
+            ///////////////////////////////////////////////
+            
+            sf::Text text10;
+            text10.setFont(font);
+            text10.setString("::::::::::::::::::::");
+            text10.setCharacterSize(40);
+            text10.setFillColor(sf::Color::Yellow);
+            text10.setPosition(0.f, 530.f);
+            window.draw(text);
+            window.draw(text10);
 
-                
+
+            sf::Text text13;
+            text13.setFont(font2);
+            text13.setString("@FLEX 2.0");
+            text13.setCharacterSize(30);
+            text13.setFillColor(sf::Color::White);
+            text13.setPosition(325.f, 540.f);
+            window.draw(text);
+            window.draw(text13);
+
+            sf::Text text12;
+            text12.setFont(font);
+            text12.setString(":::::::::::::::::::::::");
+            text12.setCharacterSize(40);
+            text12.setFillColor(sf::Color::Yellow);
+            text12.setPosition(490.f, 530.f);
+            window.draw(text);
+            window.draw(text12);
+
+            ////////////////////////////////////////
+
+            sf::Text text11;
+            text11.setFont(font);
+            text11.setString("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+            text11.setCharacterSize(40);
+            text11.setFillColor(sf::Color::Yellow);
+            text11.setPosition(0.f, 560.f);
+            window.draw(text);
+            window.draw(text11);
+
+
+
+
+            //mouse buttons
+            sf::Event event2;
+            while (window.pollEvent(event2)) {
+                if (event2.type == sf::Event::Closed)
+                    window.close();
+
+                if (event2.type == sf::Event::MouseButtonPressed) {
+                    if (event2.mouseButton.button == sf::Mouse::Left) {
+                        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                        cout << "Mouse Clicked at (" << mousePos.x << ", " << mousePos.y << ")\n";
+                        if (checkButton(mousePos.x, mousePos.y)) {
+                            // Handle button click logic here if needed
+                        }
+                    }
+                }
             }
+
             window.display();
             // window.close();
              // Your existing logic (input handling, processing, etc.) remains in the System class.
@@ -703,60 +852,59 @@ public:
 
          //addMenuWindow.setPosition(40.0f, 40.0f);
          // Load existing data from file
-        int choice;
-        do {
-            // Display main menu and handle user input
-            cout << "Main Menu\n";
-            cout << "1- Enroll a student\n";
-            cout << "2- Course Registration\n";
-            cout << "3- Attendance\n";
-            cout << "4- Marks\n";
-            cout << "5- Course Withdraw\n";
-            cout << "6- Exit\n";
-            cout << "Press 1 to 6 to select an option: ";
-            cin >> choice;
+            int choice;
+            do {
+                // Display main menu and handle user input
+                cout << "Main Menu\n";
+                cout << "1- Enroll a student\n";
+                cout << "2- Course Registration\n";
+                cout << "3- Attendance\n";
+                cout << "4- Marks\n";
+                cout << "5- Course Withdraw\n";
+                cout << "6- Exit\n";
+                cout << "Press 1 to 6 to select an option: ";
+                cin >> choice;
 
-            switch (choice) {
-            case 1:
-                enrollStudent();
-                break;
-            case 2:
-                courseRegistrationMenu();
-                break;
-            case 3:
-                attendanceMenu();
-                break;
-            case 4:
-                marksMenu();
-                break;
-            case 5:
-                courseWithdrawMenu();
-                break;
-            case 6:
-                cout << "Exiting the program.\n";
-                break;
-            default:
-                cout << "Invalid choice. Please try again.\n";
-            }
-        } while (choice != 6);
-        saveDataToFile();
+                switch (choice) {
+                case 1:
+                    enrollStudent();
+                    break;
+                case 2:
+                    courseRegistrationMenu();
+                    break;
+                case 3:
+                    attendanceMenu();
+                    break;
+                case 4:
+                    marksMenu();
+                    break;
+                case 5:
+                    courseWithdrawMenu();
+                    break;
+                case 6:
+                    cout << "Exiting the program.\n";
+                    break;
+                default:
+                    cout << "Invalid choice. Please try again.\n";
+                }
+            } while (choice != 6);
+            saveDataToFile();
+        }
+        }
+    };
+
+
+    //heres 
+    int main() {
+
+
+        System system("data.txt");
+        //system.loadDataFromFile();
+
+
+       // System system("data.txt");
+        system.run();
+        system.saveDataToFile();
+        return 0;
     }
-};
-
-
-//heres 
-int main() {
-   
-
-    System system("data.txt");
-    //system.loadDataFromFile();
-
-   
-
-    system.saveDataToFile();
-
-   // System system("data.txt");
-    system.run();
-    return 0;
-}
 
