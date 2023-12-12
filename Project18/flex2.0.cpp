@@ -13,12 +13,19 @@ using namespace sf;
 
 class Validator {
 public:
-    static bool isValidRollNumber(int rollNumber) {
-        return rollNumber > 0; // Add more validation as needed
+    static bool isValidRollNumber(const string& input) {
+        // Check if the input string contains only digits
+        return all_of(input.begin(), input.end(), [](unsigned char c) { return isdigit(c); });
     }
 
-    static bool isValidAge(int age) {
-        return age > 0 && age < 150; // Add more validation as needed
+
+    static bool isValidAge(const string& input) {
+        // Check if the input string contains only digits and is within the valid age range
+        if (all_of(input.begin(), input.end(), [](unsigned char c) { return isdigit(c); })) {
+            int age = stoi(input);
+            return age > 0 && age < 50;
+        }
+        return false;
     }
 
     static bool isValidContact(const string& contact) {
@@ -46,6 +53,7 @@ private:
     string contact;
     vector<string> courses;
     unordered_map<string, int> marks;
+    map<string, string> attendanceStatus;
 public:
     Student(const string& n, int roll, int a, const string& c) : name(n), rollNumber(roll), age(a), contact(c) {}
 
@@ -63,6 +71,20 @@ public:
                 cout << course << " ";
             }
             cout << endl;
+        }
+    }
+
+    void setAttendance(const string& courseCode, const string& status) {
+        attendanceStatus[courseCode] = status;
+    }
+
+    string getAttendance(const string& courseCode) const {
+        auto it = attendanceStatus.find(courseCode);
+        if (it != attendanceStatus.end()) {
+            return it->second;
+        }
+        else {
+            return "Not Marked";
         }
     }
     // Getters and setters as needed
@@ -131,6 +153,7 @@ public:
             enrolledStudents.push_back(student);
             student->enrollInCourse(code);
             cout << "Student enrolled in the course.\n";
+            --capacity;
         }
         else {
             cout << "Course is full. Cannot enroll more students.\n";
@@ -141,6 +164,7 @@ public:
         cout << "Enrolled Students in " << name << ":\n";
         for (const auto& student : enrolledStudents) {
             student->displayStudentInfo();
+            cout << endl;
         }
     }
 
@@ -148,7 +172,8 @@ public:
         auto it = remove(enrolledStudents.begin(), enrolledStudents.end(), student);
         enrolledStudents.erase(it, enrolledStudents.end());
         student->withdrawFromCourse(code);
-        cout << "Student withdrawn from the course.\n";
+        cout << "Student withdrawn from the course.\n" << endl;
+        ++capacity;
     }
     void displayEnrolledStudentsMarks() const {
         cout << "Enrolled Students in " << name << " with Marks:\n";
@@ -270,13 +295,14 @@ private:
     void courseRegistrationMenu() {
         int choice;
         do {
-            cout << "Course Registration Menu\n";
+            cout << "          Course Registration Menu\n"<<endl;
             cout << "1- Display Available Courses\n";
             cout << "2- Register for a Course\n";
             cout << "3- Back\n";
+            cout << endl;
             cout << "Press 1 to 3 to select an option: ";
             cin >> choice;
-
+            cout << endl;
             switch (choice) {
             case 1:
                 displayAvailableCourses();
@@ -333,13 +359,14 @@ private:
     void attendanceMenu() {
         int choice;
         do {
-            cout << "Attendance Menu\n";
+            cout << "      Attendance Menu\n"<<endl;
             cout << "1- Display Attendance (Subject wise)\n";
             cout << "2- Mark Attendance\n";
             cout << "3- Back\n";
+            cout << endl;
             cout << "Press 1 to 3 to select an option: ";
             cin >> choice;
-
+            cout << endl;
             switch (choice) {
             case 1:
                 displaySubjectWiseAttendance();
@@ -362,6 +389,10 @@ private:
             cout << "Attendance for " << course.getName() << ":\n";
             course.displayEnrolledStudents(); // Display enrolled students in the course
             // Implement logic to display attendance for each student in the course
+            for (const auto& student : course.getEnrolledStudents()) {
+                string attendance = student->getAttendance(course.getCode());
+                cout << "Attendance for " << student->getName() << " in " << course.getName() << ": " << attendance << endl;
+            }
         }
     }
 
@@ -376,10 +407,12 @@ private:
                 string status;
                 cout << "Enter attendance status for " << student->getName() << " (Present/Absent): ";
                 cin >> status;
-
-                // Add error checking for status if needed
+                student->setAttendance(course.getCode(), status);
+                cout << endl;
                 // Set attendance status for the student
-                // For example, you might have a function in the Student class like student.setAttendance(course.getName(), status);
+                string attendance = student->getAttendance(course.getCode());
+                cout << "Attendance status for " << student->getName() << " in " << course.getName() << ": " << attendance << endl;
+                cout << endl;
             }
         }
     }
@@ -387,13 +420,14 @@ private:
     void marksMenu() {
         int choice;
         do {
-            cout << "Marks Menu\n";
+            cout << "                Marks Menu\n"<<endl;
             cout << "1- Display Marks (Subject wise)\n";
             cout << "2- Assign Marks\n";
             cout << "3- Back\n";
+            cout << endl;
             cout << "Press 1 to 3 to select an option: ";
             cin >> choice;
-
+            cout << endl;
             switch (choice) {
             case 1:
                 displaySubjectWiseMarks();
@@ -411,7 +445,7 @@ private:
     }
 
     void displaySubjectWiseMarks() const {
-        // Implement logic to display subject-wise marks
+        
         // Assuming you have courses and want to display marks for each course
         for (const auto& course : courses) {
             cout << "Marks for " << course.getName() << ":\n";
@@ -420,21 +454,21 @@ private:
             // Implement logic to display marks for each student in the course
             for (const auto& studentPtr : course.getEnrolledStudents()) {
                 // Display marks for the student
-                // For example, you might have a function in the Student class like studentPtr->displayMarks();
+                
                 studentPtr->displayMarks();
             }
         }
     }
 
     void assignMarks() {
-        // Implement logic to assign marks
+        // Implementing logic to assign marks
 
         // Assuming you have courses and want to assign marks for each course
         for (auto& course : courses) {
             cout << "Assign Marks for " << course.getName() << ":\n";
             course.displayEnrolledStudents(); // Display enrolled students in the course
 
-            // Implement logic to assign marks for each student in the course
+            // Implementing logic to assign marks for each student in the course
             for (auto& student : course.getEnrolledStudents()) {
                 int marks;
                 cout << "Enter marks for " << student->getName() << ": ";
@@ -442,8 +476,9 @@ private:
 
                 // Add error checking for marks if needed
                 // Assign marks to the student
-                // For example, you might have a function in the Student class like student.assignMarks(course.getName(), marks);
+               
                 student->assignMarks(course.getName(), marks);
+                cout << endl;
             }
         }
     }
@@ -451,13 +486,14 @@ private:
     void courseWithdrawMenu() {
         int choice;
         do {
-            cout << "Course Withdraw Menu\n";
+            cout << "               Course Withdraw Menu\n"<<endl;
             cout << "1- Enrolled Courses\n";
             cout << "2- Drop a Course\n";
             cout << "3- Back\n";
+            cout << endl;
             cout << "Press 1 to 3 to select an option: ";
             cin >> choice;
-
+            cout << endl;
             switch (choice) {
             case 1:
                 displayEnrolledCourses();
@@ -475,11 +511,11 @@ private:
     }
 
     void displayEnrolledCourses() const {
-        // Implement logic to display enrolled courses
+        // Implementing logic to display enrolled courses
         // Assuming you have students and want to display enrolled courses for each student
         for (const auto& student : students) {
             student.displayStudentInfo();
-            student.displayEnrolledCourses(); // Display enrolled courses for the student
+           // student.displayEnrolledCourses(); // Display enrolled courses for the student
         }
     }
 
@@ -489,7 +525,7 @@ private:
         cout << "Enter your roll number: ";
         cin >> studentRollNumber;
 
-        auto studentIt = std::find_if(students.begin(), students.end(),
+        auto studentIt = find_if(students.begin(), students.end(),
             [studentRollNumber](const Student& s) { return s.getRollNumber() == studentRollNumber; });
 
         if (studentIt != students.end()) {
@@ -504,12 +540,13 @@ private:
                 int choice;
                 cout << "Enter the number corresponding to the course you want to drop: ";
                 cin >> choice;
-
+                cout << endl;
                 // Add error checking for choice if needed
                 if (choice >= 1 && choice <= studentIt->getEnrolledCourses().size()) {
                     //  studentIt->withdrawFromCourse(static_cast<si>(choice - 1));
 
-                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice]);
+                    studentIt->withdrawFromCourse(studentIt->getEnrolledCourses()[choice-1]);
+                    cout << "student is withdrawn from relevant course" << endl;
                 }
                 else {
                     cout << "Invalid choice. No course dropped.\n";
@@ -527,7 +564,7 @@ private:
     void enrollStudent() {
         // Implement logic for enrolling a student
         string name, contact;
-        int rollNumber, age;
+        string rollNumber, age;
 
         cout << "Enter student name: ";
         cin.ignore(); // Clear buffer
@@ -535,24 +572,39 @@ private:
         cout << endl;
 
 
-        cout << "Enter student roll number: ";
-        cin >> rollNumber;
-        cout << endl;
-        // Add validation for rollNumber using isValidRollNumber
+        do {
+            cout << "Enter student roll number: ";
+            cin >> rollNumber;
+            cout << endl;
 
-        cout << "Enter student age: ";
-        cin >> age;
-        cout << endl;
-        // Add validation for age using isValidAge
+            if (!Validator::isValidRollNumber(rollNumber)) {
+                cout << "Invalid roll number. Please enter a valid roll number (> 0).\n";
+            }
+        } while (!Validator::isValidRollNumber(rollNumber));
 
-        cout << "Enter student contact: ";
+        do {
+            cout << "Enter student age: ";
+            cin >> age;
+            cout << endl;
+
+            if (!Validator::isValidAge(age)) {
+                cout << "Invalid age. Please enter a valid age (1-49).\n";
+            }
+        } while (!Validator::isValidAge(age));
+
         cin.ignore(); // Clear buffer
-        getline(cin, contact);
-        cout << endl;
-        // Add validation for contact using isValidContact
+        do {
+            cout << "Enter student contact: ";
+            getline(cin, contact);
+            cout << endl;
 
-        Student newStudent(name, rollNumber, age, contact);
-        students.push_back(newStudent);
+            if (!Validator::isValidContact(contact)) {
+                cout << "Invalid contact. Please enter a valid contact.\n";
+            }
+        } while (!Validator::isValidContact(contact));
+
+        // Student newStudent(name, rollNumber, age, contact);
+         //students.push_back(newStudent);
 
         cout << "Student enrolled successfully.\n";
         cout << endl;
@@ -647,24 +699,24 @@ public:
     void run()
     {
         loadDataFromFile();
-        sf::RenderWindow window(sf::VideoMode(830, 600), "FLEX_2.0", sf::Style::Close);
+        RenderWindow window(VideoMode(830, 600), "FLEX_2.0", Style::Close);
         // Define two rectangles to cover the window's left and right halves
         // Define two rectangles to cover the window's upper and lower halves
-        sf::RectangleShape upperRect(sf::Vector2f(window.getSize().x, window.getSize().y / 8));
-        sf::RectangleShape lowerRect(sf::Vector2f(window.getSize().x, 7 * window.getSize().y / 8));
+        RectangleShape upperRect(Vector2f(window.getSize().x, window.getSize().y / 8));
+        RectangleShape lowerRect(Vector2f(window.getSize().x, 7 * window.getSize().y / 8));
 
         // Set positions for the rectangles
         upperRect.setPosition(0, 0);
         lowerRect.setPosition(0, window.getSize().y / 8);
 
         // Set colors for the rectangles
-        upperRect.setFillColor(sf::Color::White);
-        lowerRect.setFillColor(sf::Color::Blue);
+        upperRect.setFillColor(Color::White);
+        lowerRect.setFillColor(Color::Blue);
 
         while (window.isOpen()) {
-            sf::Event event;
+            Event event;
             while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed) {
+                if (event.type == Event::Closed) {
                     window.close();
                 }
             }
@@ -686,31 +738,31 @@ public:
 
             // Display your user interface using SFML, e.g., buttons, text, etc.
             // For simplicity, I'm displaying a basic message.
-            sf::Font font;
+            Font font;
             if (!font.loadFromFile("Fonts/verdanab.ttf")) {
                 cerr << "Error: Font not found.\n";
                 return;
             }
-            sf::Font font2;
+            Font font2;
             if (!font2.loadFromFile("Fonts/Pacifico.ttf")) {
                 cerr << "Error: Font not found.\n";
                 return;
             }
 
-            sf::Text text;
+            Text text;
             text.setFont(font2);
             text.setString("WELCOME  TO  STUDENT  MANAGMENT  SYSTEM ");
             text.setCharacterSize(28);
-            text.setFillColor(sf::Color::Blue);
+            text.setFillColor(Color::Blue);
             text.setPosition(55.f, 30.f);
             window.draw(text);
 
 
-            sf::Text text2;
+            Text text2;
             text2.setFont(font);
             text2.setString("MAIN MENU");
             text2.setCharacterSize(24);
-            text2.setFillColor(sf::Color::White);
+            text2.setFillColor(Color::White);
             text2.setPosition(330.f, 130.f);
             window.draw(text2);
 
@@ -719,11 +771,11 @@ public:
 
 
 
-            sf::Text text3;
+            Text text3;
             text3.setFont(font);
             text3.setString("1. ENROLL A STUDENT");
             text3.setCharacterSize(18);
-            text3.setFillColor(sf::Color::Cyan);
+            text3.setFillColor(Color::Cyan);
             text3.setPosition(120.f, 200.f);
             window.draw(text);
             window.draw(text3);
@@ -731,11 +783,11 @@ public:
             ///////////////////////////////
 
 
-            sf::Text text4;
+            Text text4;
             text4.setFont(font);
             text4.setString("2. COURSE REGISTERATION");
             text4.setCharacterSize(18);
-            text4.setFillColor(sf::Color::Cyan);
+            text4.setFillColor(Color::Cyan);
             text4.setPosition(120.f, 250.f);
             window.draw(text);
             window.draw(text4);
@@ -743,11 +795,11 @@ public:
             ///////////////////////////////////
 
 
-            sf::Text text5;
+            Text text5;
             text5.setFont(font);
             text5.setString("3. ATTENDENCE");
             text5.setCharacterSize(18);
-            text5.setFillColor(sf::Color::Cyan);
+            text5.setFillColor(Color::Cyan);
             text5.setPosition(120.f, 300.f);
             window.draw(text);
             window.draw(text5);
@@ -755,11 +807,11 @@ public:
             //////////////////////////////////////
 
 
-            sf::Text text6;
+            Text text6;
             text6.setFont(font);
             text6.setString("4. MARKS");
             text6.setCharacterSize(18);
-            text6.setFillColor(sf::Color::Cyan);
+            text6.setFillColor(Color::Cyan);
             text6.setPosition(120.f, 350.f);
             window.draw(text);
             window.draw(text6);
@@ -767,22 +819,22 @@ public:
 
             ///////////////////////////////////////
 
-            sf::Text text7;
+            Text text7;
             text7.setFont(font);
             text7.setString("5. COURSE WITHDRAW");
             text7.setCharacterSize(18);
-            text7.setFillColor(sf::Color::Cyan);
+            text7.setFillColor(Color::Cyan);
             text7.setPosition(120.f, 400.f);
             window.draw(text);
             window.draw(text7);
 
             /////////////////////////////////////
 
-            sf::Text text8;
+            Text text8;
             text8.setFont(font);
             text8.setString("6. EXIT");
             text8.setCharacterSize(18);
-            text8.setFillColor(sf::Color::Cyan);
+            text8.setFillColor(Color::Cyan);
             text8.setPosition(120.f, 450.f);
             window.draw(text);
             window.draw(text8);
@@ -790,51 +842,51 @@ public:
             //////////////////////////////////////
             // 
             // 
-            sf::Text text9;
+            Text text9;
             text9.setFont(font);
             text9.setString(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
             text9.setCharacterSize(40);
-            text9.setFillColor(sf::Color::Yellow);
+            text9.setFillColor(Color::Yellow);
             text9.setPosition(0.f, 500.f);
             window.draw(text);
             window.draw(text9);
             ///////////////////////////////////////////////
             
-            sf::Text text10;
+            Text text10;
             text10.setFont(font);
             text10.setString("::::::::::::::::::::");
             text10.setCharacterSize(40);
-            text10.setFillColor(sf::Color::Yellow);
+            text10.setFillColor(Color::Yellow);
             text10.setPosition(0.f, 530.f);
             window.draw(text);
             window.draw(text10);
 
 
-            sf::Text text13;
+            Text text13;
             text13.setFont(font2);
             text13.setString("@FLEX 2.0");
             text13.setCharacterSize(30);
-            text13.setFillColor(sf::Color::White);
+            text13.setFillColor(Color::White);
             text13.setPosition(325.f, 540.f);
             window.draw(text);
             window.draw(text13);
 
-            sf::Text text12;
+            Text text12;
             text12.setFont(font);
             text12.setString(":::::::::::::::::::::::");
             text12.setCharacterSize(40);
-            text12.setFillColor(sf::Color::Yellow);
+            text12.setFillColor(Color::Yellow);
             text12.setPosition(490.f, 530.f);
             window.draw(text);
             window.draw(text12);
 
             ////////////////////////////////////////
 
-            sf::Text text11;
+            Text text11;
             text11.setFont(font);
             text11.setString("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
             text11.setCharacterSize(40);
-            text11.setFillColor(sf::Color::Yellow);
+            text11.setFillColor(Color::Yellow);
             text11.setPosition(0.f, 560.f);
             window.draw(text);
             window.draw(text11);
@@ -843,14 +895,14 @@ public:
 
 
             //mouse buttons
-            sf::Event event2;
+            Event event2;
             while (window.pollEvent(event2)) {
-                if (event2.type == sf::Event::Closed)
+                if (event2.type == Event::Closed)
                     window.close();
 
-                if (event2.type == sf::Event::MouseButtonPressed) {
-                    if (event2.mouseButton.button == sf::Mouse::Left) {
-                        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (event2.type == Event::MouseButtonPressed) {
+                    if (event2.mouseButton.button == Mouse::Left) {
+                        Vector2i mousePos = Mouse::getPosition(window);
                         cout << "Mouse Clicked at (" << mousePos.x << ", " << mousePos.y << ")\n";
                         if (checkButton(mousePos.x, mousePos.y)) {
                             // Handle button click logic here if needed
@@ -882,7 +934,7 @@ public:
             int choice;
             do {
                 // Display main menu and handle user input
-                cout << "        Main Menu\n";
+                cout << "                 Main Menu\n";
                 cout << endl;
                 cout << "1- Enroll a student\n";
                 cout << "2- Course Registration\n";
@@ -892,7 +944,7 @@ public:
                 cout << "6- Exit\n";
                 cout << "Press 1 to 6 to select an option: ";
                 cin >> choice;
-
+                cout << endl;
                 switch (choice) {
                 case 1:
                     enrollStudent();
@@ -911,11 +963,15 @@ public:
                     break;
                 case 6:
                     cout << "Exiting the program.\n";
+                    exit(0);//for successfully terminate program
                     break;
+                    
+                    
                 default:
                     cout << "Invalid choice. Please try again.\n";
                 }
             } while (choice != 6);
+            
             saveDataToFile();
         }
         }
@@ -925,7 +981,7 @@ public:
     //heres 
     int main() {
 
-
+        cout << "-------------WELCOME TO FLEX 2.0---------" << endl;
         System system("data.txt");
         //system.loadDataFromFile();
 
